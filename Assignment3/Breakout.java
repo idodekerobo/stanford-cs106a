@@ -73,19 +73,18 @@ public class Breakout extends GraphicsProgram {
 
 		// Set the canvas size.  In your code, remember to ALWAYS use getWidth()
 		// and getHeight() to get the screen dimensions, not these constants!
-		setCanvasSize(getWidth(), getHeight());
+		setCanvasSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+//		setCanvasSize(getWidth(), getHeight());
 		
-		println(getWidth()+","+getHeight());
-
 		/* You fill this in, along with any subsidiary methods */
-		
 		createGame();
+		addMouseListeners();
 	}	
 
 	public void createGame() {
 		setUpBricks();
 		setUpPaddle();
-		addMouseListeners();
+		
 	}
 	
 	public void setUpBricks() {
@@ -133,33 +132,35 @@ public class Breakout extends GraphicsProgram {
 				
 				add(brick);
 				initialX += BRICK_WIDTH+BRICK_SEP;
-				println(initialX);
+//				println(initialX);
 			}
 			initialY += BRICK_HEIGHT+BRICK_SEP;
 		}
 	}
 	
 	public void setUpPaddle() {
+	//	paddle and paddle (x,y) local variable
 		double paddleX = (getWidth() - PADDLE_WIDTH)/2;
 		double paddleY = (getHeight() - PADDLE_Y_OFFSET);
-		GRect paddle = new GRect(paddleX, paddleY, PADDLE_WIDTH, PADDLE_HEIGHT);
+		paddle = new GRect(paddleX, paddleY, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setFilled(true);
 		add(paddle);
 	}
+	
 	public void mouseMoved(MouseEvent e) {
-		double paddleX = (getWidth() - PADDLE_WIDTH)/2;
-		double paddleY = (getHeight() - PADDLE_Y_OFFSET);
-		GRect paddle = getElementAt(paddleX, paddleY);
+		double paddleY = getHeight() - PADDLE_Y_OFFSET;
 		
-		double offsetX = e.getX() - paddleX;
-		
-		if (paddle != null) {
-			if (offsetX+paddleX > getWidth() - 10) {
-				paddle.move(getWidth()-paddleX, 0);
-			} else {
-				paddle.move(offsetX, 0);
-			}
+		if (e.getX() > (getWidth() - PADDLE_WIDTH)) {
+			paddle.setLocation((getWidth() - PADDLE_WIDTH), paddleY);
+		} else if (e.getX() < 0) {
+			paddle.setLocation(0, paddleY);
+		} else {
+			paddle.setLocation(e.getX(), paddleY);
 		}
-		
 	}
+	
+//	private instance variables
+//	need instance variable of paddle so the program can track it across methods
+	private GRect paddle;
+	
 }
