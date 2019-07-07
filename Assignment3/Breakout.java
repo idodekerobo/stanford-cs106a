@@ -79,12 +79,20 @@ public class Breakout extends GraphicsProgram {
 		/* You fill this in, along with any subsidiary methods */
 		createGame();
 		addMouseListeners();
+		playGame();
+		println(vx);
 	}	
 
 	public void createGame() {
 		setUpBricks();
 		setUpPaddle();
-		
+		setUpBall();
+	}
+	
+	public void playGame() {
+		while (ball.getX() < getWidth()) {
+			moveBall();
+		}
 	}
 	
 	public void setUpBricks() {
@@ -159,8 +167,35 @@ public class Breakout extends GraphicsProgram {
 		}
 	}
 	
-//	private instance variables
-//	need instance variable of paddle so the program can track it across methods
+	public void setUpBall() {
+		double ballX = (getWidth() - (BALL_RADIUS*2))/2;
+		double ballY = (getHeight() - (BALL_RADIUS*2))/2;
+		ball = new GOval(ballX, ballY, BALL_RADIUS*2, BALL_RADIUS*2);
+		ball.setFilled(true);
+		add(ball);
+	}
+	
+	public void moveBall() {
+		pause(100);
+		ball.move(vx, vy);
+		vy += 3.0;
+	}
+
+	public double randomVX(double vx) {
+		if (rgen.nextBoolean(0.5)) {
+			vx = -(rgen.nextDouble(1.0, 3.0));
+		}
+		return vx;
+	}
+	//	private instance variables
+	//	need instance variable of paddle so the program can track it across methods
 	private GRect paddle;
+	private GOval ball;
+	
+	private RandomGenerator rgen = RandomGenerator.getInstance();
+	private double vx = randomVX(rgen.nextDouble(1.0, 3.0));
+	
+	private double vy = 3.0;
 	
 }
+
