@@ -1,7 +1,7 @@
 /*
  * File: Breakout.java
  * -------------------
- * Name:
+ * Name: Idode Kerobo
  * Section Leader:
  * 
  * This file will eventually implement the game of Breakout.
@@ -92,6 +92,7 @@ public class Breakout extends GraphicsProgram {
 	public void playGame() {
 		while (ball.getX() < getWidth()) {
 			moveBall();
+			checkForCollisions();
 		}
 	}
 	
@@ -145,7 +146,6 @@ public class Breakout extends GraphicsProgram {
 			initialY += BRICK_HEIGHT+BRICK_SEP;
 		}
 	}
-	
 	public void setUpPaddle() {
 	//	paddle and paddle (x,y) local variable
 		double paddleX = (getWidth() - PADDLE_WIDTH)/2;
@@ -154,7 +154,6 @@ public class Breakout extends GraphicsProgram {
 		paddle.setFilled(true);
 		add(paddle);
 	}
-	
 	public void mouseMoved(MouseEvent e) {
 		double paddleY = getHeight() - PADDLE_Y_OFFSET;
 		
@@ -166,7 +165,6 @@ public class Breakout extends GraphicsProgram {
 			paddle.setLocation(e.getX(), paddleY);
 		}
 	}
-	
 	public void setUpBall() {
 		double ballX = (getWidth() - (BALL_RADIUS*2))/2;
 		double ballY = (getHeight() - (BALL_RADIUS*2))/2;
@@ -174,13 +172,55 @@ public class Breakout extends GraphicsProgram {
 		ball.setFilled(true);
 		add(ball);
 	}
-	
 	public void moveBall() {
-		pause(100);
+		pause(25);
 		ball.move(vx, vy);
-		vy += 3.0;
+		vy += 1.0;
 	}
-
+	public void checkForCollisions() {
+		GRect collider = getCollidingObject();
+		if (collider != null) {
+			if (collider == paddle) {
+				vy *= -1;
+			} else {
+				remove(collider);
+				vy *= -1;
+			}
+		}
+		
+		if (ball.getY() > getHeight() - (BALL_RADIUS*2)) {
+			remove(ball);
+		} else if (ball.getX() + (BALL_RADIUS*2) > getWidth()) {
+			vx *= -1;
+		} else if (ball.getX() < 0) {
+			vx *= -1;
+		} else if (ball.getY() < 0) {
+			vy *= -1;
+		}
+	}
+	private GRect getCollidingObject() {
+		GRect obj;
+		if (getElementAt(ball.getX(), ball.getY()) != null) {
+			obj = getElementAt(ball.getX(), ball.getY());
+			return obj;
+		} else if (getElementAt(ball.getX()+ BALL_RADIUS*2, ball.getY()) != null) {
+			obj = getElementAt(ball.getX()+ BALL_RADIUS*2, ball.getY());
+			return obj;
+		} else if (getElementAt(ball.getX(), ball.getY() + BALL_RADIUS*2) != null) {
+			obj = getElementAt(ball.getX(), ball.getY() + BALL_RADIUS*2);
+			return obj;
+		} else if (getElementAt((ball.getX()+(BALL_RADIUS*2)),ball.getY() + BALL_RADIUS*2) != null) {
+			obj = getElementAt((ball.getX()+(BALL_RADIUS*2)),ball.getY() + BALL_RADIUS*2);
+			return obj;
+		} else {
+			return null;
+		}
+		
+//		GRect topLeftCorner = getElementAt(ball.getX(), ball.getY());
+//		GRect topRightCorner = getElementAt((ball.getX()+(BALL_RADIUS*2)), ball.getY());
+//		GRect bottomLeftCorner = getElementAt(ball.getX(), (ball.getY() + (BALL_RADIUS*2)));
+//		GRect bottomRightCorner = getElementAt((ball.getX()+(BALL_RADIUS*2)),(ball.getY() + (BALL_RADIUS*2)));
+	}
 	public double randomVX(double vx) {
 		if (rgen.nextBoolean(0.5)) {
 			vx = -(rgen.nextDouble(1.0, 3.0));
@@ -195,7 +235,6 @@ public class Breakout extends GraphicsProgram {
 	private RandomGenerator rgen = RandomGenerator.getInstance();
 	private double vx = randomVX(rgen.nextDouble(1.0, 3.0));
 	
-	private double vy = 3.0;
-	
+	private double vy = 5.0;	
 }
 
