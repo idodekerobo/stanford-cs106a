@@ -65,7 +65,7 @@ public class Breakout extends GraphicsProgram {
 	public static final double DELAY = 1000.0 / 60.0;
 
 	// Number of turns 
-	public static final int NTURNS = 3;
+	public static int NTURNS = 3;
 
 	public void run() {
 		// Set the window's title bar text
@@ -78,25 +78,36 @@ public class Breakout extends GraphicsProgram {
 		
 		/* You fill this in, along with any subsidiary methods */
 		createGame();
-		addMouseListeners();
-		playGame();
-		println(vx);
+		while (!gameOver()) {
+			moveBall();
+		}
+		gameOverLabel();
+		
 	}	
 
-	public void createGame() {
+	private void createGame() {
 		setUpBricks();
 		setUpPaddle();
 		setUpBall();
+		addMouseListeners();
 	}
 	
-	public void playGame() {
-		while (ball.getX() < getWidth()) {
-			moveBall();
-			checkForCollisions();
+	private Boolean gameOver() {
+		if (!(NTURNS > 0)) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
-	public void setUpBricks() {
+	
+	private void gameOverLabel() {
+		GLabel gameOver = new GLabel("Game Over :(");
+		gameOver.setFont("Courier-48");
+		add(gameOver, (getWidth() - gameOver.getWidth())/2, (getHeight() - gameOver.getAscent())/2);
+	}
+	
+	private void setUpBricks() {
 		double initialY = BRICK_Y_OFFSET;
 		for (int i = 0; i < NBRICK_ROWS; i++) {
 			double initialX = (getWidth() - ((BRICK_WIDTH + BRICK_SEP)*NBRICK_COLUMNS))/2;
@@ -140,13 +151,13 @@ public class Breakout extends GraphicsProgram {
 				}
 				
 				add(brick);
+				num_bricks++;
 				initialX += BRICK_WIDTH+BRICK_SEP;
-//				println(initialX);
 			}
 			initialY += BRICK_HEIGHT+BRICK_SEP;
 		}
 	}
-	public void setUpPaddle() {
+	private void setUpPaddle() {
 	//	paddle and paddle (x,y) local variable
 		double paddleX = (getWidth() - PADDLE_WIDTH)/2;
 		double paddleY = (getHeight() - PADDLE_Y_OFFSET);
@@ -165,32 +176,60 @@ public class Breakout extends GraphicsProgram {
 			paddle.setLocation(e.getX(), paddleY);
 		}
 	}
-	public void setUpBall() {
+	private void setUpBall() {
 		double ballX = (getWidth() - (BALL_RADIUS*2))/2;
 		double ballY = (getHeight() - (BALL_RADIUS*2))/2;
 		ball = new GOval(ballX, ballY, BALL_RADIUS*2, BALL_RADIUS*2);
 		ball.setFilled(true);
 		add(ball);
 	}
-	public void moveBall() {
-		pause(25);
-		ball.move(vx, vy);
-		vy += 1.0;
+	private void moveBall() {
+		
+		while (ballOnScreen()) {
+			
+			ball.move(vx, vy);
+			checkForCollisions();
+			pause(DELAY);
+//			REMOVE VELOCITY TO TEST GAME
+//			vy += 0.2;
+			
+			if (num_bricks == 0) {
+				winGame();
+			}
+			
+		}
+		
 	}
-	public void checkForCollisions() {
+	
+	private Boolean winGame() {
+		if (num_bricks == 0) {
+			GLabel gameWon = new GLabel("You Won! :)");
+			gameWon.setFont("Courier-48");
+			add(gameWon, (getWidth() - gameWon.getWidth())/2, (getHeight() - gameWon.getAscent())/2); 
+		}
+		return null;
+	}
+	
+	private void checkForCollisions() {
 		GRect collider = getCollidingObject();
 		if (collider != null) {
 			if (collider == paddle) {
-				vy *= -1;
+//				if (ball.getY() >= getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT - BALL_RADIUS*2 && ball.getY() < getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT - BALL_RADIUS*2 + 4) {
+					vy *= -1;	
+//				}
+				println("vx: " + vx + ", vy: " + vy + ", ballX: " + ball.getX() + ", ballY: " +ball.getY());
 			} else {
 				remove(collider);
+				num_bricks--;
+				println(num_bricks);
 				vy *= -1;
 			}
 		}
-		
 		if (ball.getY() > getHeight() - (BALL_RADIUS*2)) {
 			remove(ball);
-		} else if (ball.getX() + (BALL_RADIUS*2) > getWidth()) {
+			
+		}
+		else if (ball.getX() + (BALL_RADIUS*2) > getWidth()) {
 			vx *= -1;
 		} else if (ball.getX() < 0) {
 			vx *= -1;
@@ -214,14 +253,30 @@ public class Breakout extends GraphicsProgram {
 			return obj;
 		} else {
 			return null;
-		}
-		
-//		GRect topLeftCorner = getElementAt(ball.getX(), ball.getY());
-//		GRect topRightCorner = getElementAt((ball.getX()+(BALL_RADIUS*2)), ball.getY());
-//		GRect bottomLeftCorner = getElementAt(ball.getX(), (ball.getY() + (BALL_RADIUS*2)));
-//		GRect bottomRightCorner = getElementAt((ball.getX()+(BALL_RADIUS*2)),(ball.getY() + (BALL_RADIUS*2)));
+		}		
 	}
-	public double randomVX(double vx) {
+	
+	private Boolean ballOnScreen() {
+		if (ball.getY() >= getHeight()) {
+			remove(turns);
+			remove(ball);
+			NTURNS--;
+			setUpBall();
+			pause(1000);
+			return false;
+		} else {
+			addTurnsLabel();
+			return true;
+		}
+	}
+	
+	private void addTurnsLabel() {
+		turns = new GLabel("Turns Left: "+ NTURNS);
+		turns.setFont("Times-15");
+		add(turns, getWidth() - (turns.getWidth()), turns.getAscent());
+	}
+	
+	private double randomVX(double vx) {
 		if (rgen.nextBoolean(0.5)) {
 			vx = -(rgen.nextDouble(1.0, 3.0));
 		}
@@ -231,10 +286,13 @@ public class Breakout extends GraphicsProgram {
 	//	need instance variable of paddle so the program can track it across methods
 	private GRect paddle;
 	private GOval ball;
+	private GLabel turns;
+	private int num_bricks = 0;
+	
 	
 	private RandomGenerator rgen = RandomGenerator.getInstance();
 	private double vx = randomVX(rgen.nextDouble(1.0, 3.0));
 	
-	private double vy = 5.0;	
+	private double vy = 3.0;	
 }
 
