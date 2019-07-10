@@ -67,6 +67,9 @@ public class Breakout extends GraphicsProgram {
 	// Number of turns 
 	public static int NTURNS = 3;
 
+	
+//	RUNS THE PROGRAM
+//====================================================================================
 	public void run() {
 		// Set the window's title bar text
 		setTitle("CS 106A Breakout");
@@ -83,7 +86,8 @@ public class Breakout extends GraphicsProgram {
 		}
 		gameOverLabel();
 		
-	}	
+	}
+//====================================================================================
 
 	private void createGame() {
 		setUpBricks();
@@ -100,11 +104,62 @@ public class Breakout extends GraphicsProgram {
 		}
 	}
 	
+	private void checkForCollisions() {
+		GRect collider = getCollidingObject();
+		if (collider != null) {
+			if (collider == paddle) {
+					vy *= -1;	
+				println("vx: " + vx + ", vy: " + vy + ", ballX: " + ball.getX() + ", ballY: " +ball.getY());
+			} else {
+				bounceClip.play();
+				remove(collider);
+				num_bricks--;
+				println(num_bricks);
+				vy *= -1;
+			}
+		}
+		if (ball.getY() > getHeight() - (BALL_RADIUS*2)) {
+			remove(ball);
+			
+		}
+		else if (ball.getX() + (BALL_RADIUS*2) > getWidth()) {
+			vx *= -1;
+		} else if (ball.getX() < 0) {
+			vx *= -1;
+		} else if (ball.getY() < 0) {
+			vy *= -1;
+		}
+	}
+	
+	private void moveBall() {
+		
+		while (ballOnScreen()) {
+			addTurnsLabel();
+			ball.move(vx, vy);
+			checkForCollisions();
+			pause(DELAY);
+			
+			if (num_bricks == 0) {
+				winGame();
+			}
+			
+		}
+		
+	}
 	
 	private void gameOverLabel() {
 		GLabel gameOver = new GLabel("Game Over :(");
 		gameOver.setFont("Courier-48");
 		add(gameOver, (getWidth() - gameOver.getWidth())/2, (getHeight() - gameOver.getAscent())/2);
+	}
+	
+	private Boolean winGame() {
+		if (num_bricks == 0) {
+			GLabel gameWon = new GLabel("You Won! :)");
+			gameWon.setFont("Courier-48");
+			add(gameWon, (getWidth() - gameWon.getWidth())/2, (getHeight() - gameWon.getAscent())/2); 
+		}
+		return null;
 	}
 	
 	private void setUpBricks() {
@@ -157,6 +212,7 @@ public class Breakout extends GraphicsProgram {
 			initialY += BRICK_HEIGHT+BRICK_SEP;
 		}
 	}
+	
 	private void setUpPaddle() {
 	//	paddle and paddle (x,y) local variable
 		double paddleX = (getWidth() - PADDLE_WIDTH)/2;
@@ -165,6 +221,7 @@ public class Breakout extends GraphicsProgram {
 		paddle.setFilled(true);
 		add(paddle);
 	}
+	
 	public void mouseMoved(MouseEvent e) {
 		double paddleY = getHeight() - PADDLE_Y_OFFSET;
 		
@@ -176,6 +233,7 @@ public class Breakout extends GraphicsProgram {
 			paddle.setLocation(e.getX(), paddleY);
 		}
 	}
+	
 	private void setUpBall() {
 		double ballX = (getWidth() - (BALL_RADIUS*2))/2;
 		double ballY = (getHeight() - (BALL_RADIUS*2))/2;
@@ -183,60 +241,7 @@ public class Breakout extends GraphicsProgram {
 		ball.setFilled(true);
 		add(ball);
 	}
-	private void moveBall() {
-		
-		while (ballOnScreen()) {
-			
-			ball.move(vx, vy);
-			checkForCollisions();
-			pause(DELAY);
-//			REMOVE VELOCITY TO TEST GAME
-//			vy += 0.2;
-			
-			if (num_bricks == 0) {
-				winGame();
-			}
-			
-		}
-		
-	}
 	
-	private Boolean winGame() {
-		if (num_bricks == 0) {
-			GLabel gameWon = new GLabel("You Won! :)");
-			gameWon.setFont("Courier-48");
-			add(gameWon, (getWidth() - gameWon.getWidth())/2, (getHeight() - gameWon.getAscent())/2); 
-		}
-		return null;
-	}
-	
-	private void checkForCollisions() {
-		GRect collider = getCollidingObject();
-		if (collider != null) {
-			if (collider == paddle) {
-//				if (ball.getY() >= getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT - BALL_RADIUS*2 && ball.getY() < getHeight() - PADDLE_Y_OFFSET - PADDLE_HEIGHT - BALL_RADIUS*2 + 4) {
-					vy *= -1;	
-//				}
-				println("vx: " + vx + ", vy: " + vy + ", ballX: " + ball.getX() + ", ballY: " +ball.getY());
-			} else {
-				remove(collider);
-				num_bricks--;
-				println(num_bricks);
-				vy *= -1;
-			}
-		}
-		if (ball.getY() > getHeight() - (BALL_RADIUS*2)) {
-			remove(ball);
-			
-		}
-		else if (ball.getX() + (BALL_RADIUS*2) > getWidth()) {
-			vx *= -1;
-		} else if (ball.getX() < 0) {
-			vx *= -1;
-		} else if (ball.getY() < 0) {
-			vy *= -1;
-		}
-	}
 	private GRect getCollidingObject() {
 		GRect obj;
 		if (getElementAt(ball.getX(), ball.getY()) != null) {
@@ -258,14 +263,12 @@ public class Breakout extends GraphicsProgram {
 	
 	private Boolean ballOnScreen() {
 		if (ball.getY() >= getHeight()) {
-			remove(turns);
 			remove(ball);
 			NTURNS--;
 			setUpBall();
 			pause(1000);
 			return false;
 		} else {
-			addTurnsLabel();
 			return true;
 		}
 	}
@@ -274,6 +277,9 @@ public class Breakout extends GraphicsProgram {
 		turns = new GLabel("Turns Left: "+ NTURNS);
 		turns.setFont("Times-15");
 		add(turns, getWidth() - (turns.getWidth()), turns.getAscent());
+		if (ballOnScreen() == false) {
+			remove(turns);
+		}
 	}
 	
 	private double randomVX(double vx) {
@@ -282,13 +288,15 @@ public class Breakout extends GraphicsProgram {
 		}
 		return vx;
 	}
-	//	private instance variables
+	
+//	private instance variables~
+//==================================================================================
 	//	need instance variable of paddle so the program can track it across methods
 	private GRect paddle;
 	private GOval ball;
 	private GLabel turns;
 	private int num_bricks = 0;
-	
+	AudioClip bounceClip = MediaTools.loadAudioClip("bounce.au");
 	
 	private RandomGenerator rgen = RandomGenerator.getInstance();
 	private double vx = randomVX(rgen.nextDouble(1.0, 3.0));
