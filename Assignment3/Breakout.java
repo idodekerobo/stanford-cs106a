@@ -132,9 +132,8 @@ public class Breakout extends GraphicsProgram {
 	}
 	
 	private void moveBall() {
-		
+		addTurnsLabel();
 		while (ballOnScreen()) {
-			addTurnsLabel();
 			ball.move(vx, vy);
 			checkForCollisions();
 			pause(DELAY);
@@ -264,6 +263,7 @@ public class Breakout extends GraphicsProgram {
 	private Boolean ballOnScreen() {
 		if (ball.getY() >= getHeight()) {
 			remove(ball);
+			remove(turns);
 			NTURNS--;
 			setUpBall();
 			pause(1000);
@@ -277,9 +277,9 @@ public class Breakout extends GraphicsProgram {
 		turns = new GLabel("Turns Left: "+ NTURNS);
 		turns.setFont("Times-15");
 		add(turns, getWidth() - (turns.getWidth()), turns.getAscent());
-		if (ballOnScreen() == false) {
-			remove(turns);
-		}
+//		if (ballOnScreen() == false) {
+//			remove(turns);
+//		}
 	}
 	
 	private double randomVX(double vx) {
