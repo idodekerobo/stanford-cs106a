@@ -1,0 +1,22 @@
+import acm.program.*;
+
+public class RemoveAllOccurences extends ConsoleProgram {
+	
+	public void run() {
+		String line = readLine("Enter a line: ");
+		String remove = readLine("Enter what you'd like to remove: ");
+		removeAllOccurences(line, remove);
+	}
+	
+	private void removeAllOccurences(String line, String remove) {
+		String newLine = "";
+		for (int i = 0; i < line.length(); i++) {
+			String str = "" + line.charAt(i);
+			if (!remove.equals(str)) {
+				newLine += str;
+			}
+		}
+		
+		println(newLine);
+	}
+}
