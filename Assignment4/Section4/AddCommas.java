@@ -6,9 +6,21 @@ public class AddCommas extends ConsoleProgram {
 	public void run() {
 		while (true) {
 			String digits = readLine("Enter a numeric string: ");
-			if (digits.length() == 0) { break; }
+			if (digits.length() == 0 && checkIfStringIsNumeric(digits)) {
+				break;
+			}
 			println(addCommasToString(digits));
 		}
+	}
+	
+	private Boolean checkIfStringIsNumeric(String digits) {
+		Boolean allNumbers = true;
+		for (int i = 0; i < digits.length(); i++) {
+			if (!(digits.charAt(i) >= 48 && digits.charAt(i) <= 57)) {
+				allNumbers = false;
+			}
+		}
+		return allNumbers;
 	}
 	
 	private String addCommasToString(String digits) {
