@@ -108,11 +108,21 @@ public class Hangman extends ConsoleProgram {
     	}
     	//return newWordState;
     }
+            
     
     // instance variables
+   
+    // creating instance of hangman lexicon
     private HangmanLexicon hangmanLexicon = new HangmanLexicon();
-    // eventually will choose a random number from the lexicon
-    private String secretWord = hangmanLexicon.getWord(3);
+
+    // random generator to find random number from lexicon
+    private RandomGenerator rgen = RandomGenerator.getInstance();
+    
+    // variable that'll choose random number from lexicon index range
+    private int wordNumber = rgen.nextInt(0, hangmanLexicon.getWordCount()-1);
+    
+    // choosing random number from hangman lexicon and saving it to secret word variable
+    private String secretWord = hangmanLexicon.getWord(wordNumber);
     
     // instance variable that will hold the guess as its built out
     private static char guessedLetter;
