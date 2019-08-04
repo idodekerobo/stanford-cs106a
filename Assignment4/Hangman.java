@@ -13,19 +13,31 @@ import java.awt.*;
 
 public class Hangman extends ConsoleProgram {
 
+	public void init() {
+		
+		canvas = new HangmanCanvas();
+		add(canvas);
+		canvas.reset();
+		
+		
+	}
+	
     public void run() {
 		/* You fill this in */
  
     	setupGame();
-    	while (wrongGuesses < 3 && ((wordState.indexOf('_') != -1))) {
+    	while (wrongGuesses < guessesAllowed && ((wordState.indexOf('_') != -1))) {
+    		println("Here's the amount of guesses you have remaining: " + (guessesAllowed - wrongGuesses));
     		takeGuess();
         	makeGuess();
-        	
         	if (wordState.indexOf('_') == -1) {
+        		println();
         		println("Congrats! You guessed the word!");
-        	} else if (wrongGuesses >= 3) {
+        	} else if (wrongGuesses >= guessesAllowed) {
+        		println();
         		println("Damn, maybe you'll get it next time!");
         	}
+        	canvas.displayWord(wordState);
     	}
     	
 	}
@@ -43,8 +55,8 @@ public class Hangman extends ConsoleProgram {
     	for (int i=0; i < secretWord.length(); i++) {
     		wordState += "_";
     	}
+    	println();
     	println("Here's your first hint: " + wordState);
-    	//return wordState;
     }
     
     private void takeGuess() {
@@ -58,32 +70,42 @@ public class Hangman extends ConsoleProgram {
     						(guessLetter.charAt(0) >= 97 && guessLetter.charAt(0) <= 122)) ) {
     			guessLetter = guessLetter.toUpperCase();
     			if (recordOfGuesses.indexOf(guessLetter.charAt(0)) != -1) {
+    				println();
     				println("You already guessed that letter!");
         		} else {
         			break;
         		}
     			
     		}
+    		println();
     		println("Remember: you can only guess one character at a time and it has to be a letter. Try again.");
     		guessLetter = readLine("Guess your letter: ");
     	}
     	guessLetter = guessLetter.toUpperCase();
 		guessedLetter = guessLetter.charAt(0);
 		recordOfGuesses += guessedLetter;
+		println();
 		println("This is your guess: " + guessedLetter);
     }
     
-    // compare BUOY to ----
+    // compare letter to secret word and current word state
     private void makeGuess() {
     	char ch = guessedLetter;
     	newWordState = "";
     	
+    	
     	// test if the ch is contained in the secret word, if not add 1 to wrong guesses
     	if (secretWord.indexOf(ch) == -1) {
+    		println();
     		println("That guess isn't in the word!");
     		println("This is your progress: " + wordState);
     		wrongGuesses +=1;
-    		println("Here's how many guesses you have left: " + (3 - wrongGuesses) );
+    		
+    		/* add a body part to the hangman */
+    		canvas.noteIncorrectGuess(ch);
+    		
+    		println();
+    		println("Here's how many guesses you have left: " + (guessesAllowed - wrongGuesses) );
     	// if it is, then do stuff
     	} else {
     		
@@ -104,14 +126,13 @@ public class Hangman extends ConsoleProgram {
         		}
         	}
     		wordState = newWordState;
+    		println();
     		println("Current word: " + newWordState);
     	}
-    	//return newWordState;
     }
             
     
     // instance variables
-   
     // creating instance of hangman lexicon
     private HangmanLexicon hangmanLexicon = new HangmanLexicon();
 
@@ -126,10 +147,17 @@ public class Hangman extends ConsoleProgram {
     
     // instance variable that will hold the guess as its built out
     private static char guessedLetter;
-    private static String wordState = "";
-    private static String newWordState = "";
-    private static int wrongGuesses = 0;
-    private static String recordOfGuesses = "";
     
+    public static String wordState = "";
+    
+    private static String newWordState = "";
+    public static int wrongGuesses = 0;
+    private static int guessesAllowed = 8;
+    
+    public static String recordOfGuesses = "";
+
+    
+    // instantiating Hangman Canvas instance
+    private HangmanCanvas canvas;
     
 }
