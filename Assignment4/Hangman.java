@@ -36,6 +36,7 @@ public class Hangman extends ConsoleProgram {
         	} else if (wrongGuesses >= guessesAllowed) {
         		println();
         		println("Damn, maybe you'll get it next time!");
+        		println("This was the secret word: "+ secretWord);
         	}
         	canvas.displayWord(wordState);
     	}
@@ -60,6 +61,7 @@ public class Hangman extends ConsoleProgram {
     }
     
     private void takeGuess() {
+    	println();
     	String guessLetter = readLine("Guess your letter: ");
     	while (guessLetter.length() >= 2 || 
     			( !(guessLetter.charAt(0) >= 65 && guessLetter.charAt(0) <= 90) || 
@@ -84,7 +86,6 @@ public class Hangman extends ConsoleProgram {
     	guessLetter = guessLetter.toUpperCase();
 		guessedLetter = guessLetter.charAt(0);
 		recordOfGuesses += guessedLetter;
-		println();
 		println("This is your guess: " + guessedLetter);
     }
     
