@@ -11,7 +11,8 @@ import java.util.ArrayList;
 
 public class HangmanLexicon {
 
-	private String[] copyDataFileIntoArray() {
+	// method can just return ArrayList - no need to copy to regular array
+	private ArrayList<String> copyDataFileIntoArray() {
 		ArrayList<String> lineList =  new ArrayList<String>();
 		BufferedReader rd = null;
 		//String line;
@@ -31,25 +32,25 @@ public class HangmanLexicon {
 			//println("This was the error: " + ex);
 			throw new ErrorException(ex);
 		}
-		String[] result = new String[lineList.size()];
+		// copy listList ArrayList to regular Array since the method returns an array
+		/* String[] result = new String[lineList.size()];
 		for (int i=0; i < result.length; i++) {
 			result[i] = lineList.get(i);
-		}
-		return result;
+		} */
+		return lineList;
 	}
-	
 	
 /** Returns the number of words in the lexicon. */
 	public int getWordCount() {
-		String[] listOfWords = copyDataFileIntoArray();
-		return (listOfWords.length);
+		ArrayList<String> listOfWords = copyDataFileIntoArray();
+		return (listOfWords.size());
 	}
 
 /** Returns the word at the specified index. */
 	public String getWord(int index) {
-		String[] listOfWords = copyDataFileIntoArray();
-		if (index > 0 && index < listOfWords.length-1) {
-			return listOfWords[index];
+		ArrayList<String> listOfWords = copyDataFileIntoArray();
+		if (index > 0 && index < listOfWords.size()-1) {
+			return listOfWords.get(index);
 		} else {
 			throw new ErrorException("getWord: Illegal index");
 		}
