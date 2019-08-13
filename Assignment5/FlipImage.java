@@ -5,7 +5,7 @@ import acm.util.*;
 public class FlipImage extends GraphicsProgram {
 
 	public void run() {
-		GImage pic = new GImage("photo.jpg");
+		GImage pic = new GImage("unnamed.jpg");
 		double x = (getWidth() - pic.getWidth())/2;
 		double y = (getHeight() - pic.getHeight())/2;
 		
@@ -32,7 +32,8 @@ public class FlipImage extends GraphicsProgram {
 		int[][] array = image.getPixelArray();
 		int width = array[0].length;
 		int height = array.length;
-		for (int i=0; i < height/2; i++) {
+		//have to work all the way across - doing half for the height will only flip half the image
+		for (int i=0; i < height; i++) {
 			for (int p1 = 0; p1 < width/2; p1++) {
 				int p2 = width - 1 - p1;
 				int temp = array[i][p1];
