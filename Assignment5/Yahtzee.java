@@ -31,6 +31,12 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			IODialog dialog = getDialog();
 			playerNames[i] = dialog.readLine("Enter name for player " + (i + 1));
 		}
+		
+		/* init scoreboard based on how many players and categories
+		 *  also init placeholder multi-dim array of same size to keep track of categories already chosen
+		 *  */
+		scoreboard = new int[nPlayers][N_CATEGORIES];
+		selectedCategories = new int[nPlayers][N_CATEGORIES];
 	}
 	
 	/**
@@ -67,14 +73,23 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	 * implementation.
 	 */
 	private void playGame() {
-		/* You fill this in! */
 		createDie();
-		for (int i = 1; i <= 13; i++) {
+		// for 13 turns
+		for (int i = 0; i < N_SCORING_CATEGORIES; i++) {
+			// let ea/ player have one turn
 			for (int j=0; j < nPlayers; j++) {
 				playerTurn(j);
 			}
 		}
 		
+		// check if either player has gotten the upper bonus 
+		checkForUpperBonus();
+		
+		// calculate total
+		calculateTotalScore();
+		
+		// check who has won
+		checkWinner();
 	}
 	
 	/* initializing the 5 different die */
@@ -87,18 +102,35 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	
 	private void playerTurn(int playerIndex) {
 		
+		display.printMessage("Hey "+ playerNames[playerIndex]+ ", roll the dice to get your turn started!");
 		display.waitForPlayerToClickRoll(playerIndex);
 		initialRoll();
 		
 		for (int i=0; i<2; i++) {
+			display.printMessage("Select the dice that you'd like to reroll. If none, just click roll again.");
 			display.waitForPlayerToSelectDice();
 			rollSelectedDie();
 			
 		}
-		display.updateScorecard(
-				checkScoreOfCategory(display.waitForPlayerToSelectCategory()),
-				playerIndex,
-				scoreForCategory);
+		
+		chooseCategoryAndCalculateScore(playerIndex);
+		
+		/* updating the total of upper score */
+		upperScore = 0;
+		for (int i=0; i < UPPER_SCORE; i++) {
+			upperScore += scoreboard[playerIndex][i];
+		}
+		scoreboard[playerIndex][UPPER_SCORE] = upperScore;
+		display.updateScorecard(UPPER_SCORE, playerIndex, upperScore);
+		
+		/* updating the total of lower score */
+		lowerScore = 0;
+		for (int i=THREE_OF_A_KIND; i < LOWER_SCORE; i++) {
+			lowerScore += scoreboard[playerIndex][i];
+		}
+		scoreboard[playerIndex][LOWER_SCORE] = lowerScore;
+		display.updateScorecard(LOWER_SCORE, playerIndex, lowerScore);
+		
 	}
 	
 	/* rolls die at beginning of turn */
@@ -121,7 +153,19 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		display.displayDice(die);
 	}
 	
-	private int checkScoreOfCategory(int category) {
+	private void chooseCategoryAndCalculateScore(int playerIndex) {
+		display.printMessage("Choose a category that you'd like to enter the dice for.");
+		int category = display.waitForPlayerToSelectCategory();
+		
+		while (selectedCategories[playerIndex][category] !=  0) {
+			display.printMessage("You can only choose a category once. Please select another category");
+			category = display.waitForPlayerToSelectCategory();
+		}
+		
+		checkScoreOfCategory(category, playerIndex);
+	}
+	
+	private void checkScoreOfCategory(int category, int playerIndex) {
 		scoreForCategory = 0;
 		
 		if (category >= 0 && category <= 5) {
@@ -172,9 +216,19 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			}
 		}
 		
-		return category;
+		println("This was your score for that, Player " + playerIndex + " " + scoreForCategory);
+		display.printMessage("Your score for that category was "+scoreForCategory);
+		
+		scoreboard[playerIndex][category]= scoreForCategory;
+		display.updateScorecard(category, playerIndex, scoreForCategory);
+		
+		selectedCategories[playerIndex][category] = 1;
+		
+		/* keep track of total */
+		scoreboard[playerIndex][TOTAL] += scoreForCategory;
+		display.updateScorecard(TOTAL, playerIndex, scoreboard[playerIndex][TOTAL]);
+		
 	}
-	
 	
 	private int[] sortDieByValue(int[] die) {
 		int temp;
@@ -193,8 +247,60 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return die;
 	}
 	
-	private void calculateScore() {
+	private void checkForUpperBonus() {
+		/* check if either player earned upper score bonus */
+		for (int i=0; i < nPlayers; i++) {
+			if (scoreboard[i][UPPER_SCORE] > 63) {
+				
+				println(playerNames[i] + " earned the upper bonus!");
+				display.printMessage(playerNames[i] + " earned the upper bonus!");
+				println(playerNames[i] + " earned the upper bonus!");
+				
+				scoreboard[i][UPPER_BONUS] = 35;
+				display.updateScorecard(UPPER_SCORE, i, 35);
+				
+			} else {
+				scoreboard[i][UPPER_BONUS] = 0;
+				display.updateScorecard(UPPER_SCORE, i, 0);
+				println(playerNames[i] + " did not earn the upper bonus :(");
+				display.printMessage(playerNames[i] + " did not earn the upper bonus :(");
+				
+			}
+		}
+	}
+	
+	private void calculateTotalScore() {
+		for (int i=0; i < nPlayers; i++) {
+			int total = 
+					scoreboard[i][UPPER_SCORE]
+							+ scoreboard[i][UPPER_BONUS]
+									+ scoreboard[i][LOWER_SCORE];
+			
+			println("==================");
+			println(playerNames[i]);
+			println("Upper score: " + scoreboard[i][UPPER_SCORE]);
+			println("Upper bonus: " + scoreboard[i][UPPER_BONUS]);
+			println("Lower Score: " + scoreboard[i][LOWER_SCORE]);
+			println("Total: " + total);
+			println("==================");
+			
+		}
+	}
+	
+	private void checkWinner() {
+		int max = 0;
+		String winner = "";
 		
+		
+		for (int i=0; i < nPlayers; i++) {
+			if (scoreboard[i][TOTAL] > max) {
+				max = scoreboard[i][TOTAL];
+				winner = playerNames[i];
+			}
+		}
+		
+		display.printMessage("With a score of " + max + ", " + winner + " has won!!");
+		println("With a score of " + max + ", " + winner + " has won!!");
 	}
 	
 	/* Private instance variables */
@@ -203,5 +309,11 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private YahtzeeDisplay display;
 	private RandomGenerator rgen = new RandomGenerator();
 	private int[] die;
+	private int[][] scoreboard;
+	private int[][] selectedCategories;
 	private int scoreForCategory;
+	
+	private int upperScore;
+	private int lowerScore;
+
 }
