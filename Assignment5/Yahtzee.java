@@ -191,23 +191,43 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 				}
 			}
 		} else if (category == 10) {
-			Boolean p = YahtzeeMagicStub.checkCategory(die, category);
-			if (p) {
-				scoreForCategory += 25;
+			// full house
+			
+			
+
+		} else if (category == 11 || category == 12) {
+			// small straight
+			sortDieByValue(die);
+			int numberOfMatches = 0;
+			
+			for (int i=0; i < die.length - 1; i++) {
+				int firstElement = die[i] + 1;
+				int secondElement = die[i+1];
+				
+				if (firstElement == secondElement) {
+					numberOfMatches++;
+				}
 			}
-		} else if (category == 11) {
-			Boolean p = YahtzeeMagicStub.checkCategory(die, category);
-			if (p) {
+			
+			//small straight
+			if (numberOfMatches >= 4 && category == 11) {
 				scoreForCategory += 30;
 			}
-		} else if (category == 12) {
-			Boolean p = YahtzeeMagicStub.checkCategory(die, category);
-			if (p) {
+			
+			//large straight
+			if (numberOfMatches >= 5 && category == 12) {
 				scoreForCategory += 40;
 			}
 		} else if (category == 13) {
-			Boolean p = YahtzeeMagicStub.checkCategory(die, category);
-			if (p) {
+			Boolean yahtzee = false;
+			
+			for (int i=0; i < die.length-1; i++) {
+				if (die[i] == die[i + 1]) {
+					yahtzee = true;
+				}
+			}
+			
+			if (yahtzee) {
 				scoreForCategory += 50;
 			}
 		} else if (category == 14) {
@@ -317,3 +337,20 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private int lowerScore;
 
 }
+
+/*
+ * another way of checking for yahtzee
+ */
+/*
+sortDieByValue(die);
+int numberOfMatches = 0;
+for (int i=1; i < die.length; i++) {
+	if (die[i] == die[i-1]) {
+		numberOfMatches++;
+	}
+}
+			
+if (numberOfMatches == 5) {
+	scoreForCategory += 50;
+}
+*/
