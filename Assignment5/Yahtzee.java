@@ -192,9 +192,36 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			}
 		} else if (category == 10) {
 			// full house
+			sortDieByValue(die);
+			Boolean parents = false;
+			Boolean children = false;
 			
+			// counts the frequency of ea/ value possible on die. goes to 6 because its a six sided die
+			int[] counts = new int[6];
 			
-
+			//count occurences in array
+			for (int i=0; i < die.length; i++) {
+				
+				/* int j = die[i]-1;
+				counts[j]++; */
+				
+				/* shortened version */
+				counts[die[i]-1]++;
+			}
+			
+			// check for a 2 (parents) and a 3 (children) for it to be a full house
+			for (int i: counts) {
+				if (i==2) {
+					parents = true;
+				}
+				if (i==3) {
+					children = true;
+				}
+			}
+			
+			if (parents && children) {
+				scoreForCategory += 25;
+			}
 		} else if (category == 11 || category == 12) {
 			// small straight
 			sortDieByValue(die);
