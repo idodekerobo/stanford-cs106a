@@ -9,6 +9,8 @@ public class UsingInteractors extends GraphicsProgram {
 	
 	public void init() {
 		// setFont("Courier-24");
+		objects = new HashMap<String, GObject>();
+		pt = new GPoint();
 		addButtonsAndLabels();
 		addActionListeners();
 		addMouseListeners();	
@@ -39,17 +41,24 @@ public class UsingInteractors extends GraphicsProgram {
 			println(source);
 			// add box with text from text field inside it
 			 createBox(name);
-		}
-		
-		if (source == remove) {
+		} else if (source == remove) {
 			println("the remove button action event");
 			println(source);
 			removeBox(name);
-		}
-		
-		if (source == clear) {
+		} else if (source == clear) {
 			println("the clear button action event");
 			clearCanvas();
+		}
+	}
+	
+	public void mousePressed(MouseEvent e) {
+		if (pt != null) {
+			
+			GObject currentBox = getElementAt(e.getX(), e.getY());
+			currentBox.sendToFront();
+			
+			println("new point");
+			pt.setLocation(e.getX(), e.getY());
 		}
 	}
 	
@@ -57,10 +66,11 @@ public class UsingInteractors extends GraphicsProgram {
 	public void mouseDragged(MouseEvent e) {
 		println("Dragged the mouse.");
 		GObject currentBox = getElementAt(e.getX(), e.getY());
-		
-//		double moveX = getWidth() - e.getX(); 
+		 
 		if (currentBox != null) {
-			currentBox.setLocation(e.getX(), e.getY());
+			double moveX = e.getX() - pt.getX();
+			double moveY = e.getY() - pt.getY();
+			currentBox.move(moveX, moveY);
 		}
 	}
 	
@@ -71,26 +81,46 @@ public class UsingInteractors extends GraphicsProgram {
 		
 		GCompound box = new GCompound();
 		
-		GRect size = new GRect(BOX_WIDTH, BOX_HEIGHT);
+		GRect sq = new GRect(BOX_WIDTH, BOX_HEIGHT);
 		GLabel label = new GLabel(name.getText());
 		
-		add(box);
-		
 		double labelX = (getWidth() - label.getWidth())/2;
-		double labelY = (getHeight() - label.getHeight())/2;
+		double labelY = (getHeight() - label.getAscent())/2;
 		
-		add(label, labelX, labelY);
+		box.add(sq, boxX, boxY);
+		box.add(label, labelX, labelY);
+		
+		//add GCompound to hashmap for tracking across the program
+		objects.put(name.getText(), box);
+		
+		// add GCompound to the canvas
+		add(box);
 	}
 	
 	private void removeBox(JTextField name) {
 		println("Remove box");
-		// GRect box = 
+		GObject box = objects.get(name.getText());
 		
-		//GRect boxToRemove = name.getText();
+		if (box != null) {
+			remove(box);
+		}
 	}
 	
 	private void clearCanvas() {
-		removeAll();
+		//removeAll();
+		
+		// only grab the keys of the objects hashmap
+		Iterator<String> it = objects.keySet().iterator();
+		
+		// only removing the objects from hashmap so other shapes on canvas aren't effected
+		while (it.hasNext()) {
+			String name = it.next();
+			GObject box = objects.get(name);
+			remove(box);
+			println("Removed the " + name);
+		}
+		
+		
 	}
 	
 	// constants
@@ -99,6 +129,13 @@ public class UsingInteractors extends GraphicsProgram {
 	JButton remove;
 	JButton clear;
 	
+	//hashmap to store keys of canvas objects
+	HashMap<String, GObject> objects;
+	
+	//point to keep track of where to move boxes
+	GPoint pt;
+	
+	// box height/width constants
 	private static final double BOX_WIDTH = 120;
 	private static final double BOX_HEIGHT = 50;
 	
