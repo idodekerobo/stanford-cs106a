@@ -52,25 +52,27 @@ public class UsingInteractors extends GraphicsProgram {
 	}
 	
 	public void mousePressed(MouseEvent e) {
-		if (pt != null) {
-			
-			GObject currentBox = getElementAt(e.getX(), e.getY());
-			currentBox.sendToFront();
-			
-			println("new point");
-			pt.setLocation(e.getX(), e.getY());
-		}
+		
+		pt = new GPoint(e.getPoint());
+//		if (currentObject != null) {
+			currentObject = getElementAt(pt);
+//		}
+		
+		currentObject.sendToFront();
 	}
 	
 	// has to be a public event
 	public void mouseDragged(MouseEvent e) {
 		println("Dragged the mouse.");
-		GObject currentBox = getElementAt(e.getX(), e.getY());
 		 
-		if (currentBox != null) {
+		if (currentObject != null) {
 			double moveX = e.getX() - pt.getX();
 			double moveY = e.getY() - pt.getY();
-			currentBox.move(moveX, moveY);
+			currentObject.move(moveX, moveY);
+			
+			// helps make the dragging less erratic and more natural
+			//e.getX is moving while pt isn't so it multiplies the movement of GObject
+			pt = new GPoint(e.getPoint());
 		}
 	}
 	
@@ -134,6 +136,9 @@ public class UsingInteractors extends GraphicsProgram {
 	
 	//point to keep track of where to move boxes
 	GPoint pt;
+	
+	//object to keep place of current Object moving - otherwise would move both at once
+	GObject currentObject;
 	
 	// box height/width constants
 	private static final double BOX_WIDTH = 120;
