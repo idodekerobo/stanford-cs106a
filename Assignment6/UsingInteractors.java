@@ -87,7 +87,7 @@ public class UsingInteractors extends GraphicsProgram {
 		GLabel label = new GLabel(name.getText());
 		
 		double labelX = (getWidth() - label.getWidth())/2;
-		double labelY = (getHeight() - label.getAscent())/2;
+		double labelY = (getHeight() - label.getHeight() + label.getAscent())/2;
 		
 		box.add(sq, boxX, boxY);
 		box.add(label, labelX, labelY);
