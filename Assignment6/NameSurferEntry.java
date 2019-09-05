@@ -54,11 +54,17 @@ public class NameSurferEntry implements NameSurferConstants {
  */
 	public String toString() {
 		// You need to turn this stub into a real implementation //
-		String toPrint = "";
+		String toPrint = "Graph: ";
 		toPrint += name + " [";
+		int i = 0;
 		for (Integer year: yearAndRank.keySet()) {
 			Integer rank = yearAndRank.get(year);
-			toPrint += rank + " ";	
+			if (i==10) {
+				toPrint += rank;
+			} else {
+				toPrint += rank + " ";
+			}
+			i++;
 		}
 		toPrint += "]";
 		return toPrint;
@@ -103,4 +109,3 @@ public class NameSurferEntry implements NameSurferConstants {
 	private String name;
 	private HashMap<Integer, Integer> yearAndRank = new HashMap<Integer, Integer>();
 }
-
