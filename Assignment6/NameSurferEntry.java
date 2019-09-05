@@ -20,6 +20,8 @@ public class NameSurferEntry implements NameSurferConstants {
  */
 	public NameSurferEntry(String line) {
 		// You fill this in //
+//		yearAndRank.put(111, 11029);
+		
 		parseLine(line);
 		
 	}
@@ -56,7 +58,7 @@ public class NameSurferEntry implements NameSurferConstants {
 		toPrint += name + " [";
 		for (Integer year: yearAndRank.keySet()) {
 			Integer rank = yearAndRank.get(year);
-			toPrint += rank;	
+			toPrint += rank + " ";	
 		}
 		toPrint += "]";
 		return toPrint;
@@ -64,35 +66,41 @@ public class NameSurferEntry implements NameSurferConstants {
 	
 	
 	private void parseLine(String line) {
-		// int nameEnd = line.indexOf(" "); // the -1 has it do the character right before the first space
-		// name = line.substring(0, nameEnd);
+		int nameEnd = line.indexOf(" ");
+		name = line.substring(0, nameEnd);
 		
 		int decade = START_DECADE;
 		int space = line.indexOf(" ");
-		
-		/* for (int i=0; i < NDECADES; i++) {
-			int nextSpace = line.indexOf( (" " + 1), space);
+		int nextSpace = line.indexOf( (" "), (space+1) );
+		// for loop should go to < NDECADES
+		for (int i=0; i < NDECADES; i++) {
 			
-			int rank = tryParse( line.substring((space+1), nextSpace) );
-			yearAndRank.put(decade, rank);
-			
-			space = line.indexOf(" " , nextSpace);
+			if (i >= 10) {
+				int rank = tryParse( line.substring(space+1) );
+				yearAndRank.put(decade, rank);
+			} else {
+
+				int rank = tryParse( line.substring((space+1), nextSpace) );
+//				int rank = Integer.parseInt(line.substring((space+1), nextSpace));
+				yearAndRank.put(decade, rank);
+			}
+			space = nextSpace;
+			nextSpace = line.indexOf(" " , space+1);
 			decade += 10;
-		} */
-		name = "Andrew";
-		yearAndRank.put(1900, 500);
+		}
 	}
 	
 	private Integer tryParse(String s) {
 		try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
-			return null;
+			// returns this if error
+			return 999999999;
 		}
 	}
 	
 	// instance variables
 	private String name;
-	private HashMap<Integer, Integer> yearAndRank;
+	private HashMap<Integer, Integer> yearAndRank = new HashMap<Integer, Integer>();
 }
 
