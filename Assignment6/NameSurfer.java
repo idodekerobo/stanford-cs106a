@@ -30,8 +30,6 @@ public class NameSurfer extends Program implements NameSurferConstants {
 		
 		name.addActionListener(this);
 		addActionListeners();
-		
-		
 	}
 
 /* Method: actionPerformed(e) */
@@ -56,6 +54,14 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	private void graphName(String name) {
 		NameSurferEntry ob = data.findEntry(name);
 		println(ob);
+		// println(ob.getName());
+		//println(ob.toString());
+		/* int decade = 1900;
+		for (int i=0; i < 11; i++) {
+			println(ob.getRank(decade));
+			decade += 10;
+		} */
+
 	}
 	
 	private void clearCanvas() {
@@ -66,9 +72,9 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	private static final String externalFileName = "names-data.txt";
 	
 	// instance variables
-	JTextField name;
-	JButton graph;
-	JButton clear;
+	private static JTextField name;
+	private static JButton graph;
+	private static JButton clear;
 	
 	NameSurferDataBase data = new NameSurferDataBase(externalFileName);
 }
