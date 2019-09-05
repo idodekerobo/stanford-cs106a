@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+
+import acm.program.ConsoleProgram;
 import acm.util.*;
 
 /*
@@ -13,7 +15,7 @@ import acm.util.*;
  * and "ERIC" are the same names.
  */
 
-public class NameSurferDataBase implements NameSurferConstants {
+public class NameSurferDataBase extends ConsoleProgram implements NameSurferConstants {
 	
 /* Constructor: NameSurferDataBase(filename) */
 /**
@@ -26,12 +28,13 @@ public class NameSurferDataBase implements NameSurferConstants {
 		// You fill this in //
 		try {
 			BufferedReader rd = new BufferedReader(new FileReader(filename));
-			
+			println(filename);
 			while (true) {
 				String line = rd.readLine();
 				if (line == null) break;
 				NameSurferEntry entry = new NameSurferEntry(line);
-				nameList.add(entry);
+				nameData.put(entry.getName(), entry);
+				//nameList.add(entry);
 			}
 			rd.close();
 		} catch (IOException ex) {
@@ -46,16 +49,26 @@ public class NameSurferDataBase implements NameSurferConstants {
  * method returns null.
  */
 	public NameSurferEntry findEntry(String name) {
-		// You need to turn this stub into a real implementation //
-		if (nameList.contains(name)) {
+		// You need to turn this stub  into a real implementation //
+		NameSurferEntry entry = nameData.get(name);
+		return entry;
+		
+		/* if (nameList.contains(name)) {
 			int index = nameList.indexOf(name);
-			return (nameList.get(index));
+			NameSurferEntry entry = nameList.get(index);
+			
+			println(entry.getName());
+			println(entry.getRank(START_DECADE));
+			
+			return entry;
+			
 		} else {
 			return null;
-		}
+		} */
 	}
 	
 	// instance variables
-	private ArrayList<NameSurferEntry> nameList;
+	private ArrayList<NameSurferEntry> nameList = new ArrayList<NameSurferEntry>();
+	private HashMap<String, NameSurferEntry> nameData = new HashMap<String, NameSurferEntry>();
 }
 
