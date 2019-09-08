@@ -20,13 +20,15 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	    // You fill this in, along with any helper methods //
 		JLabel label = new JLabel("Name");
 		name = new JTextField(20);
-		graph = new JButton("Graph");
+		graphButt = new JButton("Graph");
 		clear = new JButton("Clear");
+		graph = new NameSurferGraph();
 		
 		add(label, SOUTH);
 		add(name, SOUTH);
-		add(graph, SOUTH);
+		add(graphButt, SOUTH);
 		add(clear, SOUTH);
+		add(graph);
 		
 		name.addActionListener(this);
 		addActionListeners();
@@ -41,19 +43,20 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		
-		if (source == graph) {
+		if (source == graphButt) {
 			println("Graph this name: " + name.getText());
 			graphName(name.getText());
 		} else if (source == clear) {
 			println("Clearing canvas of lines");
 			clearCanvas();
-		}
-			
+		}			
 	}
 	
 	private void graphName(String name) {
 		NameSurferEntry ob = data.findEntry(name);
 		println(ob);
+		graph.addEntry(ob);
+		
 		// println(ob.getName());
 		//println(ob.toString());
 		/* int decade = 1900;
@@ -61,7 +64,6 @@ public class NameSurfer extends Program implements NameSurferConstants {
 			println(ob.getRank(decade));
 			decade += 10;
 		} */
-
 	}
 	
 	private void clearCanvas() {
@@ -73,8 +75,10 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	
 	// instance variables
 	private static JTextField name;
-	private static JButton graph;
+	private static JButton graphButt;
 	private static JButton clear;
 	
-	NameSurferDataBase data = new NameSurferDataBase(externalFileName);
+	private NameSurferDataBase data = new NameSurferDataBase(externalFileName);
+	private NameSurferGraph graph;
+	
 }
