@@ -85,9 +85,7 @@ public class NameSurferEntry implements NameSurferConstants {
 				int rank = tryParse( line.substring(space+1) );
 				yearAndRank.put(decade, rank);
 			} else {
-
 				int rank = tryParse( line.substring((space+1), nextSpace) );
-//				int rank = Integer.parseInt(line.substring((space+1), nextSpace));
 				yearAndRank.put(decade, rank);
 			}
 			space = nextSpace;
