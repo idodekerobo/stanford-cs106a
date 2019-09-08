@@ -28,6 +28,7 @@ public class NameSurferGraph extends GCanvas
 	*/
 	public void clear() {
 		//	 You fill this in //
+		update();
 	}
 	
 	/* Method: addEntry(entry) */
@@ -45,32 +46,78 @@ public class NameSurferGraph extends GCanvas
 		double startX = (getWidth() / numLines);
 		double lineX = 0;
 		
-		double height = (getHeight() - GRAPH_MARGIN_SIZE) - GRAPH_MARGIN_SIZE;
+		double floor = getHeight() - GRAPH_MARGIN_SIZE;
+		double cieling = GRAPH_MARGIN_SIZE;
+		
+		double height = getHeight() - (GRAPH_MARGIN_SIZE * 2);
 		
 		for (int i=0; i < NDECADES-1; i++) {
 			GPoint point1;
-			GPoint point2;
 			
-			for (int j=0; j<2; j++) {
-				int rank = entry.getRank(decade);
-				double pointY1 = height/1000 * rank;
-				decade += 10;
+			double rank = entry.getRank(decade);
+
+			double point1Y;
+			if (rank == 0) {
+				point1Y = floor;
+			} else {
+				point1Y = (height/1000 * rank) + GRAPH_MARGIN_SIZE;
 			}
+			point1 = new GPoint(lineX, point1Y);
+			GLabel label = new GLabel(entry.getName() + " " + (int)rank);
 			
+			GPoint point2;
+			double rank2 = entry.getRank(decade+10);
 			
+			double point2Y;
+			if (rank2 == 0) {
+				point2Y = floor;
+			} else {
+				point2Y = (height/1000 * rank2) + GRAPH_MARGIN_SIZE;
+			}
+			point2 = new GPoint(lineX + startX, point2Y);
+			GLabel label2 = new GLabel(entry.getName() + " " + (int)rank2);
 			
-			/*
+			GLine line = new GLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
 			
-			rank = entry.getRank(decade);
-			double pointY2 = height/1000 * rank;
-			
-			GLine line = new GLine(lineX, pointY1, lineX+startX, pointY2);
+			switch (colors) {
+			case 1:
+				line.setColor(Color.BLACK);
+				label.setColor(Color.BLACK);
+				label2.setColor(Color.BLACK);
+				break;
+			case 2:
+				line.setColor(Color.RED);
+				label.setColor(Color.RED);
+				label2.setColor(Color.RED);
+				break;
+			case 3: 
+				line.setColor(Color.BLUE);
+				label.setColor(Color.BLUE);
+				label2.setColor(Color.BLUE);
+				break;
+			case 4:
+				line.setColor(Color.GREEN);
+				label.setColor(Color.GREEN);
+				label2.setColor(Color.GREEN);
+				break;
+			case 5:
+				line.setColor(Color.MAGENTA);
+				label.setColor(Color.MAGENTA);
+				label2.setColor(Color.MAGENTA);
+				break;
+			}
 			add(line);
-			decade += 10;
+			add(label, point1.getX(), point1.getY());
+			add(label2, point2.getX(), point2.getY());
 			
 			lineX += startX;
-			
-			*/
+			decade += 10;
+		}
+		
+		if (colors >= 5) {
+			colors = 1;
+		} else {
+			colors++;
 		}
 	}
 	
@@ -89,18 +136,6 @@ public class NameSurferGraph extends GCanvas
 		drawGrid();
 		drawOtherLines();
 	}
-	
-	
-	
-	
-	/* Implementation of the ComponentListener interface */
-	public void componentHidden(ComponentEvent e) { }
-	public void componentMoved(ComponentEvent e) { }
-	public void componentResized(ComponentEvent e) {
-		 update(); 
-	}
-	public void componentShown(ComponentEvent e) { }
-	
 	
 	private void drawGrid() {
 		double numLines = 11;
@@ -131,4 +166,16 @@ public class NameSurferGraph extends GCanvas
 		GLine bottomLine = new GLine(0, getHeight() - GRAPH_MARGIN_SIZE, getWidth(), getHeight() - GRAPH_MARGIN_SIZE);
 		add(bottomLine);
 	}
+	
+	
+	/* Implementation of the ComponentListener interface */
+	public void componentHidden(ComponentEvent e) { }
+	public void componentMoved(ComponentEvent e) { }
+	public void componentResized(ComponentEvent e) {
+		 update(); 
+	}
+	public void componentShown(ComponentEvent e) { }
+	
+	int colors = 1;
+	
 }
