@@ -56,6 +56,7 @@ public class NameSurfer extends Program implements NameSurferConstants {
 		NameSurferEntry ob = data.findEntry(name);
 		println(ob);
 		graph.addEntry(ob);
+		println(getHeight());
 		
 		// println(ob.getName());
 		//println(ob.toString());
@@ -67,7 +68,7 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	}
 	
 	private void clearCanvas() {
-		
+		graph.clear();
 	}
 	
 	// CONSTANTS
