@@ -54,21 +54,17 @@ public class NameSurfer extends Program implements NameSurferConstants {
 	
 	private void graphName(String name) {
 		NameSurferEntry ob = data.findEntry(name);
-		println(ob);
-		graph.addEntry(ob);
-		println(getHeight());
-		
-		// println(ob.getName());
-		//println(ob.toString());
-		/* int decade = 1900;
-		for (int i=0; i < 11; i++) {
-			println(ob.getRank(decade));
-			decade += 10;
-		} */
+		if (ob != null) {
+			graph.addEntry(ob);
+			graph.update();
+		} else {
+			println("Name not found.");
+		}
 	}
 	
 	private void clearCanvas() {
 		graph.clear();
+		graph.update();
 	}
 	
 	// CONSTANTS
