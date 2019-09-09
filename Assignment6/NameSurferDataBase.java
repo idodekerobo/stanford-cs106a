@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.*;
-
-import acm.program.ConsoleProgram;
 import acm.util.*;
 
 /*
@@ -15,7 +13,7 @@ import acm.util.*;
  * and "ERIC" are the same names.
  */
 
-public class NameSurferDataBase extends ConsoleProgram implements NameSurferConstants {
+public class NameSurferDataBase implements NameSurferConstants {
 	
 /* Constructor: NameSurferDataBase(filename) */
 /**
@@ -28,7 +26,6 @@ public class NameSurferDataBase extends ConsoleProgram implements NameSurferCons
 		// You fill this in //
 		try {
 			BufferedReader rd = new BufferedReader(new FileReader(filename));
-			println(filename);
 			while (true) {
 				String line = rd.readLine();
 				if (line == null) break;
@@ -50,8 +47,20 @@ public class NameSurferDataBase extends ConsoleProgram implements NameSurferCons
  */
 	public NameSurferEntry findEntry(String name) {
 		// You need to turn this stub  into a real implementation //
-		NameSurferEntry entry = nameData.get(name);
-		return entry;
+		char firstLetter = name.charAt(0);
+		if (Character.isLowerCase(firstLetter)) {
+			firstLetter = Character.toUpperCase(firstLetter);
+		}
+		String restOfLetters = name.substring(1); 
+		
+		name = firstLetter + restOfLetters;
+		
+		if (nameData.containsKey(name)) {
+			NameSurferEntry entry = nameData.get(name);
+			return entry;
+		} else {
+			return null;
+		}
 		
 		/* if (nameList.contains(name)) {
 			int index = nameList.indexOf(name);
